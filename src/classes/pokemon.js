@@ -48,31 +48,54 @@ export default class Pokemon {
     }, new Map());
   }
 
-  attackPokemon(attackId, rivalPokemon) {
+  attackPokemon(attackId, defenderPokemon) {
     const attack = this.attackMap.get(attackId);
     if (!attack) {
       throw new Error(`Pokemon does not have attack with id ${attackId}`);
     }
 
-    let attackerModifiedDamage = attack.baseDamage;
-
+    let attackerDamageModifier = 1;
     // STAB damage
     if (this.type === attack.type) {
-      attackerModifiedDamage *= STAB_MULTIPLE;
+      attackerDamageModifier *= STAB_MULTIPLE;
     }
 
-    rivalPokemon.receiveAttack(attack, attackerModifiedDamage);
+    const { defenderDamageModifier, effectiveness } = defenderPokemon.receiveAttack(attack);
+    return {
+      netDamage: attack.baseDamage * attackerDamageModifier * defenderDamageModifier,
+      effectiveness,
+    };
   }
 
-  receiveAttack(attack, attackerModifiedDamage) {
-    let netDamage = attackerModifiedDamage;
-    console.log(attack.type, this.type)
+  receiveAttack(attack) {
+    let defenderDamageModifier = 1;
+    let effectiveness = null;
     if (isEffective(attack.type, this.type)) {
-      netDamage *= EFFECTIVE_MULTIPLE;
+      defenderDamageModifier *= EFFECTIVE_MULTIPLE;
+      effectiveness = Attack.EFFECTIVENESS.SUPER_EFFECTIVE;
     } else if (isNotVeryEffective(attack.type, this.type)) {
-      netDamage *= NOT_VERY_EFFECTIVE_MULTIPLE;
+      defenderDamageModifier *= NOT_VERY_EFFECTIVE_MULTIPLE;
+      effectiveness = Attack.EFFECTIVENESS.NOT_VERY_EFFECTIVE;
     }
 
-    this.hp = Math.max(this.hp - netDamage, 0);
+    return {
+      defenderDamageModifier,
+      effectiveness,
+    };
+  }
+
+  getAttackOptions() {
+    const attackInfo = [];
+    this.attackMap.forEach(attack => {
+      attackInfo.push({ id: attack.id, name: attack.name });
+    })
+    return attackInfo;
+  }
+
+  getPokemonState() {
+    return {
+      name: this.name,
+      hp: this.hp,
+    };
   }
 }

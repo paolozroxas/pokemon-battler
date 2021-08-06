@@ -8,6 +8,11 @@ export default class Attack {
     SCRATCH: 'scratch',
   }
 
+  static EFFECTIVENESS = {
+    SUPER_EFFECTIVE: 'super_effective',
+    NOT_VERY_EFFECTIVE: 'not_very_effective',
+  }
+
   static attackTemplatesById = {
     [this.ATTACK_IDS.THUNDER_SHOCK]: {
       id: this.ATTACK_IDS.THUNDER_SHOCK,
