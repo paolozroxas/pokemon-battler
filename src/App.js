@@ -1,13 +1,12 @@
 import Pokemon from 'classes/pokemon';
 import './App.css';
 
-function App() {
-  console.log(Pokemon.createFromId('pikachu'))
+const App = props => {
   return (
     <div className="App">
-      
+      Hello World
     </div>
   );
-}
+};
 
 export default App;
